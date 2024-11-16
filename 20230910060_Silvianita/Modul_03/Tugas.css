@@ -1,0 +1,85 @@
+/* style.css */
+
+/* Reset default margin dan padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Gaya untuk body */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Gaya untuk header */
+header {
+    background: #013a5e;
+    color: #ffffff;
+    padding: 20px 0;
+    text-align: center;
+    line-height: 50px;
+}
+
+/* Gaya untuk navigasi */
+nav ul {
+    list-style: none;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+/* Gaya untuk konten utama */
+main {
+    padding: 20px;
+}
+
+/* Gaya untuk heading */
+h2, h4 {
+    background-color: #4b84a7;
+    margin-bottom: 10px;
+}
+
+/* Gaya untuk section */
+section {
+    background-color: #98aebb;
+    text-align: justify;
+}
+
+/* Gaya untuk artikel */
+article {
+    background: #ffffff;
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+article ul {
+    list-style: none;
+}
+
+article ul li {
+    margin: 0 20px;
+}
+
+/* Gaya untuk footer */
+footer {
+    text-align: center;
+    padding: 10px 0;
+    background: #013a5e;
+    color: #ffffff;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
