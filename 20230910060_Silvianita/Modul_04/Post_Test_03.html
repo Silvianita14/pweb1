@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function localScope() {
+            let localVar = "Saya adalah variabel lokal"; // Dideklarasikan di local scope
+            console.log(localVar); // Dapat diakses di dalam fungsi
+        }
+        
+        localScope(); // Output: Saya adalah variabel lokal
+        console.log(localVar); // Error: localVar is not defined, karena localVar tidak dapat diakses dari global scope
+    </script>
+</body>
+</html>
