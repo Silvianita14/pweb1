@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengelolaan Data Inventaris</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Pengelolaan Data Inventaris</h2>
+        <!-- Form untuk Menambah/Mengupdate Data -->
+        <form id="inventoryForm" class="mb-4">
+            <div class="form-group">
+                <label for="kodeBarang">Kode Barang:</label>
+                <input type="text" class="form-control" id="kodeBarang" required>
+            </div>
+            <div class="form-group">
+                <label for="namaBarang">Nama Barang:</label>
+                <input type="text" class="form-control" id="namaBarang" required>
+            </div>
+            <div class="form-group">
+                <label for="jumlahStok">Jumlah Stok:</label>
+                <input type="number" class="form-control" id="jumlahStok" required>
+            </div>
+            <div class="form-group">
+                <label for="hargaSatuan">Harga Satuan:</label>
+                <input type="number" class="form-control" id="hargaSatuan" required>
+            </div>
+            <button type="submit" class="btn btn-primary" id="submitBtn">Tambah/Update Data</button>
+        </form>
+
+        <!-- Tabel untuk Menampilkan Data -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Kode Barang</th>
+                    <th>Nama Barang</th>
+                    <th>Jumlah Stok</th>
+                    <th>Harga Satuan</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+                <!-- Baris data inventaris akan dimuat di sini -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            const script_url = 'https://script.google.com/macros/s/AKfycbzX8oSpXW6IyGFj1j90q3VA9MpAoL7b1_XpfSk5w_ZqyoVR0C35Wa9IrXnTtw2QO-QV/exec';
+
+            // Muat data inventaris saat halaman dimuat
+            loadInventory();
+
+            // Handle form submit untuk tambah/update data
+            $('#inventoryForm').on('submit', function(event) {
+                event.preventDefault();
+                const kodeBarang = $('#kodeBarang').val();
+                const namaBarang = $('#namaBarang').val();
+                const jumlahStok = $('#jumlahStok').val();
+                const hargaSatuan = $('#hargaSatuan').val();
+
+                const action = $('#submitBtn').text() === 'Update Data' ? 'update' : 'insert';
+
+                $.ajax({
+                    url: script_url,
+                    type: "GET",
+                    dataType: "jsonp",
+                    data: {
+                        kodeBarang: kodeBarang,
+                        namaBarang: namaBarang,
+                        jumlahStok: jumlahStok,
+                        hargaSatuan: hargaSatuan,
+                        action: action
+                    },
+                    success: function(response) {
+                        alert(response.result);
+                        loadInventory(); // Refresh data setelah insert/update
+                        $('#inventoryForm')[0].reset();
+                        $('#submitBtn').text('Tambah Data');
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error("Request failed: ", textStatus, errorThrown);
+                    }
+                });
+            });
+
+            // Fungsi untuk memuat data inventaris ke tabel
+            function loadInventory() {
+                $.ajax({
+                    url: script_url,
+                    type: "GET",
+                    data: { action: "read" },
+                    dataType: "json",
+                    success: function(response) {
+                        const tbody = $('#inventoryTableBody');
+                        tbody.empty(); // Hapus isi tabel sebelumnya
+
+                        response.forEach(item => {
+                            tbody.append(`
+                                <tr>
+                                    <td>${item["Kode Barang"]}</td>
+                                    <td>${item["Nama Barang"]}</td>
+                                    <td>${item["Jumlah Stok"]}</td>
+                                    <td>${item["Harga Satuan"]}</td>
+                                    <td>
+                                        <button class="btn btn-warning btn-sm edit-btn" data-kode="${item["Kode Barang"]}" 
+                                            data-nama="${item["Nama Barang"]}" data-stok="${item["Jumlah Stok"]}" 
+                                            data-harga="${item["Harga Satuan"]}">Edit</button>
+                                        <button class="btn btn-danger btn-sm delete-btn" data-kode="${item["Kode Barang"]}">Delete</button>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+
+                        // Fungsi edit
+                        $('.edit-btn').click(function() {
+                            const kode = $(this).data('kode');
+                            const nama = $(this).data('nama');
+                            const stok = $(this).data('stok');
+                            const harga = $(this).data('harga');
+
+                            $('#kodeBarang').val(kode);
+                            $('#namaBarang').val(nama);
+                            $('#jumlahStok').val(stok);
+                            $('#hargaSatuan').val(harga);
+                            $('#submitBtn').text('Update Data');
+                        });
+
+                        // Fungsi delete
+                        $('.delete-btn').click(function() {
+                            const kode = $(this).data('kode');
+                            if (confirm(`Apakah Anda yakin ingin menghapus data dengan Kode Barang: ${kode}?`)) {
+                                $.ajax({
+                                    url: script_url,
+                                    type: "GET",
+                                    dataType: "jsonp",
+                                    data: { kodeBarang: kode, action: 'delete' },
+                                    success: function(response) {
+                                        alert(response.result);
+                                        loadInventory();
+                                    },
+                                    error: function(jqXHR, textStatus, errorThrown) {
+                                        console.error("Request failed: ", textStatus, errorThrown);
+                                    }
+                                });
+                            }
+                        });
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error("Request failed: ", textStatus, errorThrown);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
